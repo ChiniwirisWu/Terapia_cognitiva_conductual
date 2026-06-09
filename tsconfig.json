@@ -21,7 +21,16 @@
     ],
     "paths": {
       "@/*": ["app/*"],
-      "#/*":["server/*"]
+      "@components/*": ["app/(frontend)/shared/components/*"],
+      "@constants/*": ["app/(frontend)/shared/constants/*"],
+      "@slides/*": ["app/(frontend)/shared/slides/*"],
+      "@utils/*": ["app/(frontend)/shared/utils/*"],
+      "@hooks/*": ["app/(frontend)/shared/hooks/*"],
+      "@services/*": ["app/(frontend)/shared/services/*"],
+
+      "@models/*" : ["app/(backend)/models/*"],
+      "@schemas/*" : ["app/(backend)/schemas/*"],
+      "@errors/*" : ["app/(backend)/errors/*"],
     }
   },
   "include": [

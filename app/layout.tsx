@@ -1,13 +1,14 @@
 import React from 'react';
-import Header from '@/components/header';
-import PageProvider from '@/components/pageProvider';
-import './global.css';
-import { dm_sans } from './fonts';
+
+import Header from "@components/header";
+import PageProvider from '@components/pageProvider';
+import { dm_sans } from '@constants/fonts';
+import '@constants/global.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html>
+    <html className='scrollbar-gutter-stable'>
       <head></head>
       <body>
         {/* returns the current page to his children */}
