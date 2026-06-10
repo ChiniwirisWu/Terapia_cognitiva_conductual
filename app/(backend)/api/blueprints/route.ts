@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     const genre = "blueprint";
 
-    const blueprints = await BlueprintsModel.getAll({ genre });
+    const blueprints = await BlueprintsModel.getAll();
 
     return NextResponse.json(blueprints);
 

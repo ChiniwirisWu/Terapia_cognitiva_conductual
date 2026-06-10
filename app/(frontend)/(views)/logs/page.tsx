@@ -1,9 +1,9 @@
 import Logs from "./logs";
+import BlueprintsModel from "@models/blueprints";
 
 export default async function LogsView() {
 
-  const response = await fetch(process.env.LOGS_API_URL!);
-  const blueprints = await response.json();
-
+  const blueprints = await BlueprintsModel.getAll();
   return <Logs content={blueprints} />
+
 };

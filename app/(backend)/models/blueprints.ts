@@ -1,4 +1,5 @@
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+import { LogsType } from "@types";
 
 const URI = process.env.MONGODB_URI;
 
@@ -30,21 +31,30 @@ async function connect() {
 
 export default class BlueprintsModel {
 
-  static async getAll({ genre }: { genre: string }) {
-    const db = await connect();
+  static async getAll(): Promise<LogsType[]> {
+    const genre = "blueprints";
+    let result = [];
 
-    if (!db) return false;
+    try {
+      const db = await connect();
+      if (!db) {
+        throw new Error("Error conectando con la base de datos");
+      }
 
-    if (genre) {
-      return db.find({
+      result = await db.find({
         genre: {
           $regex: genre,
           $options: "i"
         }
       }).toArray();
-    }
 
-    return db.find({}).toArray();
+      return result as unknown as LogsType[];
+
+
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
   };
 
   static async getById({ id }: { id: string }) {

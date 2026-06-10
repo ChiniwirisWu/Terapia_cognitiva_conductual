@@ -8,24 +8,13 @@ import SlideSection from "@components/slideSection"
 
 import List from "@slides/list";
 
+import { LogsType } from "@types"
 
-type LogsProps = {
-  content: {
-    costo_beneficio: string,
-    creencias_contraproducentes: string[],
-    distorsiones_cognitivas: string[],
-    emociones: string[],
-    fecha: string,
-    genre: string,
-    pensamiento_negativo: string,
-    pensamiento_positivo: string,
-    suceso_transtornador: string,
-    _id: string
-  }[]
+type LogstCreatorProps = {
+  content: LogsType[]
 };
 
-export default function Logs({ content }: LogsProps) {
-
+export default function LogsCreator({ content }: LogstCreatorProps) {
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden scroll-smooth relative z-0">
