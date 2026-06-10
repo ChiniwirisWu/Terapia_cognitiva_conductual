@@ -10,11 +10,9 @@ import List from "@slides/list";
 
 import { LogsType } from "@types"
 
-type LogstCreatorProps = {
-  content: LogsType[]
-};
+export default function LogsCreator({ contentJSON }: { contentJSON: string }) {
 
-export default function LogsCreator({ content }: LogstCreatorProps) {
+  const content = JSON.parse(contentJSON) as LogsType[];
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden scroll-smooth relative z-0">

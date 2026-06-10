@@ -4,6 +4,7 @@ import BlueprintsModel from "@models/blueprints";
 export default async function LogsView() {
 
   const blueprints = await BlueprintsModel.getAll();
-  return <Logs content={blueprints} />
+
+  return <Logs contentJSON={JSON.stringify(blueprints)} />
 
 };

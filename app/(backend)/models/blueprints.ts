@@ -32,7 +32,7 @@ async function connect() {
 export default class BlueprintsModel {
 
   static async getAll(): Promise<LogsType[]> {
-    const genre = "blueprints";
+    const genre = "blueprint";
     let result = [];
 
     try {
