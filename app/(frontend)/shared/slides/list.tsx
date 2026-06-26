@@ -1,181 +1,117 @@
 "use client";
 
-import { useState } from "react"
-import ArrowButton from "@components/ArrowButton";
-import { FontColors, BackgroundColors } from "@constants/constants"
-import useList from "@hooks/useList";
-import { LogsServices } from "@services/logs";
-
+import React, { useState } from "react";
+import { LogsType } from "@types";
 
 type ListProps = {
-  content: {
-    costo_beneficio: string,
-    creencias_contraproducentes: string[],
-    distorsiones_cognitivas: string[],
-    emociones: string[],
-    fecha: string,
-    genre: string,
-    pensamiento_negativo: string,
-    pensamiento_positivo: string,
-    suceso_transtornador: string,
-    _id: string
-  }[],
+  content: LogsType[];
 };
 
 export default function List({ content }: ListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const [items, setItems] = useState(content); // I'll use this state to make the UI Effects
-  const { actions } = useList();
-
-  const localDeleteHandler = async (_id: string) => {
-    const isDeleted = await actions.confirmAction("Eliminar", () => {
-      return LogsServices.delete(_id);
-    })
-
-    if (isDeleted) {
-      setItems((prevItems) => prevItems.filter((element) => element._id !== _id));
-    }
-  };
+  // Filtro básico e interactivo para móviles
+  const filteredContent = content.filter((log) =>
+    log.pensamiento_negativo?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    log.suceso_transtornador?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="pt-40 px-20 text-white">
-      <h1 className={`${FontColors.white} text-center text-4xl mb-40 font-semibold hover:underline`}>Registro de Examenes</h1>
-      <div className="flex flex-col justify-center gap-5 max-w-2xl m-auto">
-        {items.map((element, index) => (
-          <ListElement
-            key={element._id}
-            _id={element._id}
-            costo_beneficio={element.costo_beneficio}
-            creencias_contraproducentes={element.creencias_contraproducentes}
-            distorsiones_cognitivas={element.distorsiones_cognitivas}
-            emociones={element.emociones}
-            fecha={element.fecha}
-            genre={element.genre}
-            pensamiento_positivo={element.pensamiento_positivo}
-            pensamiento_negativo={element.pensamiento_negativo}
-            suceso_transtornador={element.suceso_transtornador}
-            deleteHandler={localDeleteHandler}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-type ListElementProps = {
-  costo_beneficio: string,
-  _id: string,
-  creencias_contraproducentes: string[],
-  distorsiones_cognitivas: string[],
-  emociones: string[],
-  fecha: string,
-  genre: string,
-  pensamiento_negativo: string,
-  pensamiento_positivo: string,
-  suceso_transtornador: string,
-  deleteHandler: (_id: string) => void
-};
-
-function ListElement({
-  costo_beneficio,
-  creencias_contraproducentes,
-  distorsiones_cognitivas,
-  emociones,
-  fecha,
-  _id,
-  pensamiento_negativo,
-  pensamiento_positivo,
-  suceso_transtornador,
-  deleteHandler,
-}: ListElementProps) {
-
-  const [showDetails, setShowDetails] = useState(false);
-  const MIN_EMOTIONS_SHOWN = 3;
-  const emotionsShown = emociones.slice(0, (emociones.length > MIN_EMOTIONS_SHOWN) ? MIN_EMOTIONS_SHOWN : emociones.length);
-  const extraEmotionsCount = emociones.length - MIN_EMOTIONS_SHOWN;
-
-  return (
-    <div className="border rounded-md overflow-hidden border-gray-200 shadow-md transition-transform duration-300 hover:scale-101 hover:shadow-white">
-      {/* Shower */}
-      <div className={`flex items-center justify-between ${BackgroundColors.mauve_dark} p-5`}>
-        <div>
-          <p className="text-lg">{suceso_transtornador}</p>
-          <p className="text-sm">{emotionsShown} {extraEmotionsCount ? `(+${extraEmotionsCount})` : null}</p>
+    <div className="w-full max-w-6xl mx-auto px-4 py-6 flex flex-col gap-6">
+      
+      {/* Cabecera del Listado e Input de búsqueda responsivo */}
+      <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-white/10">
+        <div className="text-left">
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+            Historial de Registros
+          </h2>
+          <p className="text-xs md:text-sm text-gray-400 mt-1">
+            Visualiza y analiza la evolución de tus patrones de pensamiento.
+          </p>
         </div>
-        <ArrowButton selected={showDetails} setSelected={setShowDetails} />
+
+        {/* Input táctil cómodo para el pulgar en móviles */}
+        <input
+          type="text"
+          placeholder="Buscar registros..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full sm:w-64 bg-white/5 border border-white/10 focus:border-purple-500 focus:outline-none p-3 rounded-xl text-sm transition-all placeholder:text-gray-500 text-white"
+        />
       </div>
 
-      {/* DropBox con los detalles */}
-      <div className={`
-        grid transition-all duration-300 ease-in-out
-        ${showDetails ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}
-      `}>
+      {/* Estado vacío amigable */}
+      {filteredContent.length === 0 ? (
+        <div className="w-full py-12 text-center bg-white/[0.02] border border-dashed border-white/10 rounded-2xl">
+          <p className="text-gray-400 text-sm">No se encontraron registros de TCC.</p>
+        </div>
+      ) : (
+        /* GRID RESPONSIVO CRÍTICO:
+          - 1 columna en teléfonos (w-full)
+          - 2 columnas en tablets (sm:grid-cols-2)
+          - 3 columnas en laptops/escritorios (lg:grid-cols-3)
+        */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          {filteredContent.map((log, index) => (
+            <div
+              key={`log-card-${index}`}
+              className="w-full bg-white/[0.03] border border-white/5 hover:border-white/20 p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:shadow-xl active:scale-[0.99] backdrop-blur-md"
+            >
+              <div>
+                {/* Metadatos superiores / Badge de Emociones */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {Array.isArray(log.emociones) ? (
+                    log.emociones.map((emocion, i) => (
+                      <span key={i} className="text-[10px] bg-purple-500/10 text-purple-300 px-2.5 py-1 rounded-md font-medium tracking-wide">
+                        {emocion}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[10px] bg-white/5 text-gray-400 px-2 py-0.5 rounded">
+                      Registro TCC
+                    </span>
+                  )}
+                </div>
 
-        <div className={`overflow-hidden ${BackgroundColors.mauve_black}`}>
-          <div className="flex flex-col p-5 gap-5 text-sm">
+                {/* Sección Situación / Suceso */}
+                <div className="mb-4 text-left">
+                  <h4 className="text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-1">Situación</h4>
+                  <p className="text-sm text-gray-200 line-clamp-2 leading-relaxed">
+                    {log.suceso_transtornador || "No especificado"}
+                  </p>
+                </div>
 
-            <DetailsList title="Emociones" content={emociones} />
-            <DetailsList title="Distorsiones Cognitivas" content={distorsiones_cognitivas} />
-            <DetailsList title="Creencias Contraproducentes" content={creencias_contraproducentes} />
+                {/* Bloques de Pensamientos con line-clamp para no romper la altura en mobile */}
+                <div className="space-y-3 pt-3 border-t border-white/5 text-left">
+                  <div>
+                    <h4 className="text-[10px] uppercase font-bold tracking-wider text-red-400/80 mb-1">Pensamiento Automático</h4>
+                    <p className="text-sm text-gray-300 font-medium italic line-clamp-2">
+                      "{log.pensamiento_negativo || "—"}"
+                    </p>
+                  </div>
 
-            <DetailsInfo title="Costo-Beneficio" value={costo_beneficio} />
-            <DetailsInfo title="Pensamiento Negativo" value={pensamiento_negativo} />
-            <DetailsInfo title="Pensamiento Positivo" value={pensamiento_positivo} />
-            <DetailsInfo title="Última modificación" value={fecha} />
+                  {log.pensamiento_positivo && (
+                    <div>
+                      <h4 className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/80 mb-1">Pensamiento Alternativo</h4>
+                      <p className="text-sm text-gray-300 font-medium italic line-clamp-2">
+                        "{log.pensamiento_positivo}"
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            <div className="flex justify-center gap-5">
-              <DetailsButton
-                title="Eliminar"
-                onClick={deleteHandler}
-                value={_id}
-              />
+              {/* Botón expandido interactivo */}
+              <button
+                type="button"
+                className="w-full mt-5 py-3 bg-white/5 hover:bg-white text-white hover:text-black font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-1 min-h-[44px]"
+              >
+                Ver Detalle Completo
+              </button>
             </div>
-          </div>
+          ))}
         </div>
-
-      </div>
-    </div >
-  )
-}
-
-type DetailsButtonProps = {
-  title: string,
-  value: string,
-  onClick: (_id: string) => void,
-};
-
-function DetailsButton({ title, onClick, value }: DetailsButtonProps) {
-  return (
-    <button
-      className={`${BackgroundColors.mauve_dark} px-10 transition-all duration-300 py-3 cursor-pointer rounded-xl hover:scale-105 hover:bg-purple-100/50`}
-      onClick={() => onClick(value)}
-    >
-      {title}
-    </button>
-  );
-};
-
-function DetailsInfo({ title, value }: { title: string, value: string }) {
-  return (
-    <div>
-      <p><span className="font-semibold">{title}</span></p>
-      <p className="pl-5">{value}</p>
+      )}
     </div>
   );
 }
-
-
-function DetailsList({ title, content }: { title: string, content: string[] }) {
-  return (
-    <div>
-      <p><span className="font-semibold">{title}: </span></p>
-      <ul className="list-disc pl-5">
-        {content.map((element, index) => (
-          <li key={`${element}-${index}`}>{element}</li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-
