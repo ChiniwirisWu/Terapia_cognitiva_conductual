@@ -1,40 +1,28 @@
-"use client";
-
-import React from "react";
-
 type SingleFormProps = {
-  value: string;
-  setValue: (value: string) => void;
-  question: string;
-  description?: string;
+  question: string,
+  description: string,
+  value: string,
+  setValue: (value: string) => void
 };
 
-export default function SingleForm({ value, setValue, question, description }: SingleFormProps) {
+export default function SingleForm({ question, description, value, setValue }: SingleFormProps) {
   return (
-    <div className="w-full max-w-2xl px-4 flex flex-col justify-center text-center md:text-left">
-      <h2 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight leading-tight text-current">
-        {question}
-      </h2>
-      
-      {description && (
-        <p className="text-sm md:text-base opacity-70 mb-6 max-w-xl">
-          {description}
-        </p>
-      )}
+    <div className="pt-50 px-20">
+      <form className="w-full">
+        <div className="flex justify-between w-full items-center mb-5">
+          <p className="text-lg font-bold">{question}</p>
+          <p className="text-sm">({description})</p>
+        </div>
 
-      <div className="w-full relative mt-4">
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Escribe aquí..."
-          className="w-full bg-transparent border-b-2 border-current/30 focus:border-current py-3 text-xl md:text-3xl font-medium outline-none transition-colors placeholder:opacity-30 pb-2"
-        />
-      </div>
-      
-      <span className="text-[11px] opacity-40 mt-4 block text-right">
-        Desliza hacia abajo para continuar
-      </span>
+        <div className="w-full">
+          <textarea className="w-full border rounded-lg border-gray-400 
+            outline-none focus:shadow px-2 py-2h-24"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="..."
+          />
+        </div>
+      </form>
     </div>
-  );
+  )
 }
